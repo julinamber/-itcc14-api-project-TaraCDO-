@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: TaraCDO API
+  version: 1.0.0
+  description: >
+    TaraCDO is a Tourist Resource Locator API for Cagayan de Oro City.
+    It helps users explore nearby establishments, restaurants, hotels,
+    and landmarks without relying on external APIs.
+
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+
+paths:
+  /establishments:
+    get:
+      summary: Get all establishments
+      description: Returns a list of all establishments with basic info.
+      responses:
+        "200":
+          description: Successful response
+    post:
+      summary: Add new establishment
+      description: Admins can add a new place with category, price range, and coordinates.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Establishment'
+      responses:
+        "201":
+          description: Establishment added successfully
+
+  /establishments/{id}:
+    get:
+      summary: Get establishment by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Found establishment
+        "404":
+          description: Establishment not found
+    put:
+      summary: Update establishment details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Establishment'
+      responses:
+        "200":
+          description: Establishment updated
+    delete:
+      summary: Delete establishment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Establishment deleted successfully
+
+  /categories:
+    get:
+      summary: Get all categories
+      description: Returns a list of all establishment categories (e.g., Hotels, Restaurants).
+      responses:
+        "200":
+          description: Successful response
+
+  /ratings:
+    get:
+      summary: Get all ratings
+      responses:
+        "200":
+          description: Successful response
+    post:
+      summary: Add new rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+      responses:
+        "201":
+          description: Rating added successfully
+
+components:
+  schemas:
+    Establishment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Seven Seas Waterpark"
+        category:
+          type: string
+          example: "Tourist Attraction"
+        price_range:
+          type: string
+          example: "₱₱"
+        latitude:
+          type: number
+          format: float
+          example: 8.4772
+        longitude:
+          type: number
+          format: float
+          example: 124.6477
+        rating:
+          type: number
+          format: float
+          example: 4.5
+        description:
+          type: string
+          example: "A waterpark featuring thrilling slides and wave pools."
+
+    Rating:
+      type: object
+      properties:
+        id:
+          type: integer
+        establishment_id:
+          type: integer
+        user:
+          type: string
+        rating:
+          type: number
+          format: float
+          example: 5
+        comment:
+          type: string
+          example: "Amazing place to visit!"
