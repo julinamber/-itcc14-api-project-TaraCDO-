@@ -1,40 +1,53 @@
 openapi: 3.0.0
 info:
-  title: TaraCDO API
+  title: TaraCDO — Explore. Discover. Experience
+  description: Tourist Resource Locator API for establishments in Cagayan de Oro City.
   version: 1.0.0
-  description: >
-    TaraCDO is a Tourist Resource Locator API for Cagayan de Oro City.
-    It helps users explore nearby establishments, restaurants, hotels,
-    and landmarks without relying on external APIs.
+  contact:
+    name: TaraCDO
+    url: https://github.com/GlavineLayo/-itcc14-api-project-TaraCDO-
 
 servers:
-  - url: http://localhost:5000/api
-    description: Local development server
+  - url: http://devapi.com
+  - url: https://prodapi.com
 
 paths:
+
   /establishments:
     get:
       summary: Get all establishments
-      description: Returns a list of all establishments with basic info.
+      description: Returns a list of all tourist establishments.
       responses:
-        "200":
-          description: Successful response
+        200:
+          description: List of establishments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Establishment"
+
     post:
-      summary: Add new establishment
-      description: Admins can add a new place with category, price range, and coordinates.
+      summary: Add a new establishment
+      description: Creates a new tourist establishment entry.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Establishment'
+              $ref: "#/components/schemas/EstablishmentInput"
       responses:
-        "201":
-          description: Establishment added successfully
+        201:
+          description: Establishment successfully added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Establishment"
 
   /establishments/{id}:
     get:
-      summary: Get establishment by ID
+      summary: Get a specific establishment
+      description: Retrieves info for one establishment by ID.
       parameters:
         - in: path
           name: id
@@ -42,12 +55,18 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Found establishment
-        "404":
+        200:
+          description: Establishment record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Establishment"
+        404:
           description: Establishment not found
+
     put:
-      summary: Update establishment details
+      summary: Update an establishment
+      description: Updates an existing establishment record.
       parameters:
         - in: path
           name: id
@@ -59,12 +78,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Establishment'
+              $ref: "#/components/schemas/EstablishmentInput"
       responses:
-        "200":
-          description: Establishment updated
+        200:
+          description: Establishment successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Establishment"
+        404:
+          description: Establishment not found
+
     delete:
-      summary: Delete establishment
+      summary: Delete an establishment
+      description: Removes an establishment from the database.
       parameters:
         - in: path
           name: id
@@ -72,80 +99,74 @@ paths:
           schema:
             type: integer
       responses:
-        "204":
-          description: Establishment deleted successfully
-
-  /categories:
-    get:
-      summary: Get all categories
-      description: Returns a list of all establishment categories (e.g., Hotels, Restaurants).
-      responses:
-        "200":
-          description: Successful response
-
-  /ratings:
-    get:
-      summary: Get all ratings
-      responses:
-        "200":
-          description: Successful response
-    post:
-      summary: Add new rating
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Rating'
-      responses:
-        "201":
-          description: Rating added successfully
+        200:
+          description: Establishment successfully deleted
+        404:
+          description: Establishment not found
 
 components:
   schemas:
+
     Establishment:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         name:
           type: string
-          example: "Seven Seas Waterpark"
+          example: Ayala Centrio Mall
         category:
           type: string
-          example: "Tourist Attraction"
-        price_range:
-          type: string
-          example: "₱₱"
-        latitude:
-          type: number
-          format: float
-          example: 8.4772
-        longitude:
-          type: number
-          format: float
-          example: 124.6477
-        rating:
-          type: number
-          format: float
-          example: 4.5
+          example: "Mall"
         description:
           type: string
-          example: "A waterpark featuring thrilling slides and wave pools."
-
-    Rating:
-      type: object
-      properties:
-        id:
-          type: integer
-        establishment_id:
-          type: integer
-        user:
-          type: string
+          example: "A popular shopping mall located in the heart of CDO."
+        latitude:
+          type: number
+          example: 8.4825
+        longitude:
+          type: number
+          example: 124.6472
         rating:
           type: number
-          format: float
-          example: 5
-        comment:
+          example: 4.5
+        price_range:
           type: string
-          example: "Amazing place to visit!"
+          example: "$$"
+        address:
+          type: string
+          example: "C.M. Recto Avenue, Cagayan de Oro City"
+
+    EstablishmentInput:
+      type: object
+      required:
+        - name
+        - category
+        - latitude
+        - longitude
+      properties:
+        name:
+          type: string
+          example: Ayala Centrio Mall
+        category:
+          type: string
+          example: "Mall"
+        description:
+          type: string
+          example: "A popular shopping mall located in the heart of CDO."
+        latitude:
+          type: number
+          example: 8.4825
+        longitude:
+          type: number
+          example: 124.6472
+        rating:
+          type: number
+          example: 4.5
+        price_range:
+          type: string
+          example: "$$"
+        address:
+          type: string
+          example: "C.M. Recto Avenue, Cagayan de Oro City"
